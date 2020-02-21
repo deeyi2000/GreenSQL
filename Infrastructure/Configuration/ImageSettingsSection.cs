@@ -23,6 +23,7 @@ namespace GreenSQL.Infrastructure.Configuration
                         Edition = childNode.Attributes["edition"]?.Value,
                         Version = childNode.Attributes["version"]?.Value,
                         Source = childNode.Attributes["source"]?.Value,
+                        Hash = childNode.Attributes["hash"]?.Value,
                     });
                 }
             }

@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Text;
 
 namespace GreenSQL.Infrastructure.Helper
 {
@@ -29,7 +32,60 @@ namespace GreenSQL.Infrastructure.Helper
 
         public static void Delete(string path)
         {
+            if(File.Exists(path)) {
+                File.Delete(path);
+            } else {
+                Directory.Delete(path, true);
+            }
+        }
 
+        public static bool Download(string url, string dest)
+        {
+            if(File.Exists(dest)) return false;
+
+            var req = HttpWebRequest.Create(url);
+            var resp = (HttpWebResponse)req.GetResponse();
+            if(HttpStatusCode.OK != resp.StatusCode) return false;
+
+            var inStream = resp.GetResponseStream();
+            var outStream = new FileStream(dest, FileMode.OpenOrCreate);
+            inStream.CopyTo(outStream);
+            inStream.Close();
+            outStream.Flush();
+            outStream.Close();
+            return true;
+        }
+        
+        public static bool Extract(string src, string dest)
+        {
+            ZipFile.ExtractToDirectory(src, dest);
+            return true;
+        }
+
+        /// <summary>
+        ///  计算指定文件的SHA1值
+        /// </summary>
+        /// <param name="fileName">指定文件的完全限定名称</param>
+        /// <returns>返回值的字符串形式</returns>
+        public static bool CheckSHA1(string fileName, string sha1)
+        {
+            var hashSHA1 = string.Empty;
+            if (File.Exists(fileName))
+            {
+                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                {
+                    System.Security.Cryptography.SHA1 calculator = System.Security.Cryptography.SHA1.Create();
+                    byte[] buffer = calculator.ComputeHash(fs);
+                    calculator.Clear();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < buffer.Length; i++)
+                    {
+                        stringBuilder.Append(buffer[i].ToString("X2"));
+                    }
+                    hashSHA1 = stringBuilder.ToString();
+                }
+            }
+            return hashSHA1.Equals(sha1.ToUpper());
         }
 
         public static long SizeOf(string path) {
