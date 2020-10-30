@@ -76,13 +76,15 @@ namespace GreenSQL.Domain.Model
 
             var insts = new List<Instance>(strInstalls.Length);
             var regInstName = Registry.LocalMachine.OpenSubKey($"{SQLSERVER_PATH}\\Instance Names\\SQL");
-            string strTmp;
-            Instance tmp;
-            foreach (var i in strInstalls)
-            {
-                strTmp = regInstName.GetValue(i) as string;
-                tmp = Load(strTmp);
-                if (null != tmp) insts.Add(tmp);
+            if(!(regInstName is null)) {
+                string strTmp;
+                Instance tmp;
+                foreach (var i in strInstalls)
+                {
+                    strTmp = regInstName.GetValue(i) as string;
+                    tmp = Load(strTmp);
+                    if (null != tmp) insts.Add(tmp);
+                }
             }
             return insts.ToArray();
         }
