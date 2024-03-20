@@ -1,12 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
 
 namespace GreenSQL.Infrastructure.MVVM
 {
-    public abstract class ViewModelBase<T> : DependencyObject, INotifyPropertyChanged where T : DependencyObject
+    public abstract class ViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -20,12 +18,5 @@ namespace GreenSQL.Infrastructure.MVVM
                 PropertyChanged(this, new PropertyChangedEventArgs(name.Trim()));
             }
         }
-
-        private T _context;
-        public T Context => _context;
-
-        public ViewModelBase(T context) => _context = context;
-
-        public async void InvalidateRequerySuggested() => await Context.Dispatcher.BeginInvoke((Action)(() => { CommandManager.InvalidateRequerySuggested(); }));
     }
 }

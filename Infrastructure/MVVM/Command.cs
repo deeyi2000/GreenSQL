@@ -8,11 +8,11 @@ namespace GreenSQL.Infrastructure.MVVM
         protected Func<object, bool> _canExecute;
         protected Action<object> _execute;
 
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        public event EventHandler CanExecuteChanged;
+        //{
+        //    add { CommandManager.RequerySuggested += value; }
+        //    remove { CommandManager.RequerySuggested -= value; }
+        //}
 
         public bool CanExecute(object parameter = null) => (null != _canExecute) ? _canExecute(parameter) : true;
 

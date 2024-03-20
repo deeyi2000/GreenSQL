@@ -3,7 +3,7 @@ using GreenSQL.Infrastructure.MVVM;
 
 namespace GreenSQL.ViewModel
 {
-    public class NewViewModel : ViewModelBase<NewWindow>
+    public class NewViewModel : Infrastructure.MVVM.ViewModel
     {
         #region ModelProperty
         protected Image[] _images;
@@ -54,35 +54,15 @@ namespace GreenSQL.ViewModel
                         p =>
                         {
                             SelectedImage.Install(InstanceName);
-                            Context.DialogResult = true;
-                            Context.Close();
                         },
                         p => (null != SelectedImage) && !string.IsNullOrWhiteSpace(InstanceName));
                 }
                 return _okCommand;
             }
         }
-
-        protected Command _cancelCommand;
-        public Command CancelCommand
-        {
-            get
-            {
-                if (null == _cancelCommand)
-                {
-                    _cancelCommand = new Command(
-                        p =>
-                        {
-                            Context.DialogResult = false;
-                            Context.Close();
-                        });
-                }
-                return _cancelCommand;
-            }
-        }
         #endregion
 
-        public NewViewModel(NewWindow context) : base(context) 
+        public NewViewModel() 
         {
             Images = Image.LoadAll();
             SelectedImage = Images?.GetValue(0) as Image;

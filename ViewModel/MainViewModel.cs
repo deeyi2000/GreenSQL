@@ -1,9 +1,11 @@
-﻿using GreenSQL.Domain.Model;
+﻿using System.Windows.Forms;
+using GreenSQL.Domain.Model;
+using GreenSQL.Infrastructure.Helper;
 using GreenSQL.Infrastructure.MVVM;
 
 namespace GreenSQL.ViewModel
 {
-    public class MainViewModel : ViewModelBase<MainWindow>
+    public class MainViewModel : Infrastructure.MVVM.ViewModel
     {
         #region ModelProperty
         protected Instance[] _instances;
@@ -40,9 +42,8 @@ namespace GreenSQL.ViewModel
                 if (null == _newCommand)
                 {
                     _newCommand = new Command(
-                        p =>
-                        {
-                            if ((new NewWindow()).ShowDialog().GetValueOrDefault())
+                        p => {
+                            if (new NewWindow().ShowDialog() == DialogResult.OK)
                                 Instances = Instance.LoadAll();
                         });
                 }
@@ -53,17 +54,20 @@ namespace GreenSQL.ViewModel
         protected Command _delCommand;
         public Command DelCommand
         {
-            get
+            get 
             {
                 if (null == _delCommand)
                 {
                     _delCommand = new Command(
                         p => {
-                            if ((new DelWindow()).ShowDialog().GetValueOrDefault())
+                            var result = MessageBox.Show($"确定删除实例{SelectedInstance.InstanceName}?", "删除", MessageBoxButtons.OKCancel);
+                            if (result == DialogResult.OK) {
+                                SelectedInstance.Uninstall();
+                                //if (SelectedInstance.Uninstall()) {
+                                //    FileHelper.Delete($"{SelectedInstance.Path}\\{SelectedInstance.InstanceId}");
+                                //}
                                 Instances = Instance.LoadAll();
-                            /*SelectedInstance.Uninstall();
-                            SelectedInstance = null;
-                            Instances = Instance.LoadAll();*/
+                            }
                         },
                         p => (null != SelectedInstance));
                 }
@@ -116,7 +120,9 @@ namespace GreenSQL.ViewModel
         }
         #endregion
 
-        public MainViewModel(MainWindow context) : base(context) => _instances = Instance.LoadAll();
+        public MainViewModel() {
+            _instances = Instance.LoadAll();
+        }
 
     }
 }
